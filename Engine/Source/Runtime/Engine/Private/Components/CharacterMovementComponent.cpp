@@ -348,7 +348,10 @@ UCharacterMovementComponent::UCharacterMovementComponent(const FObjectInitialize
 	MaxTouchForce = 250.0f;
 	RepulsionForce = 2.5f;
 
+	//bUseControllerDesiredRotation = false;
+	//modification
 	bUseControllerDesiredRotation = false;
+	bOrientRotationToMovement = true;
 
 	bUseSeparateBrakingFriction = false; // Old default behavior.
 

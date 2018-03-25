@@ -397,7 +397,7 @@ namespace UnrealBuildTool
 			bCompileWithStatsWithoutEngine = false;
 			bCompileWithPluginSupport = false;
             bWithPerfCounters = false;
-            bUseLoggingInShipping = false;
+            bUseLoggingInShipping = true;
 			bUseChecksInShipping = false;
             bUseLauncherChecks = false;
 			bCompileFreeType = true;

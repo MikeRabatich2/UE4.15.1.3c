@@ -42,9 +42,7 @@ extern "C" {
  */
 
 /**
- * @defgroup pollopts Poll options
- * @ingroup apr_poll
- * @{
+ * Poll options
  */
 #define APR_POLLIN    0x001     /**< Can read without blocking */
 #define APR_POLLPRI   0x002     /**< Priority data available */
@@ -52,12 +50,9 @@ extern "C" {
 #define APR_POLLERR   0x010     /**< Pending error */
 #define APR_POLLHUP   0x020     /**< Hangup occurred */
 #define APR_POLLNVAL  0x040     /**< Descriptor invalid */
-/** @} */
 
 /**
- * @defgroup pollflags Pollset Flags
- * @ingroup apr_poll
- * @{
+ * Pollset Flags
  */
 #define APR_POLLSET_THREADSAFE 0x001 /**< Adding or removing a descriptor is
                                       * thread-safe
@@ -72,7 +67,6 @@ extern "C" {
                                       * the specified non-default method cannot be
                                       * used
                                       */
-/** @} */
 
 /**
  * Pollset Methods
@@ -83,8 +77,7 @@ typedef enum {
     APR_POLLSET_KQUEUE,         /**< Poll uses kqueue method */
     APR_POLLSET_PORT,           /**< Poll uses Solaris event port method */
     APR_POLLSET_EPOLL,          /**< Poll uses epoll method */
-    APR_POLLSET_POLL,           /**< Poll uses poll method */
-    APR_POLLSET_AIO_MSGQ        /**< Poll uses z/OS asio method */
+    APR_POLLSET_POLL            /**< Poll uses poll method */
 } apr_pollset_method_e;
 
 /** Used in apr_pollfd_t to determine what the apr_descriptor is */
@@ -138,7 +131,7 @@ typedef struct apr_pollset_t apr_pollset_t;
  * @remark If flags contains APR_POLLSET_WAKEABLE, then a pollset is
  *         created with an additional internal pipe object used for the
  *         apr_pollset_wakeup() call. The actual size of pollset is
- *         in that case @a size + 1. This feature is only supported on some
+ *         in that case size + 1. This feature is only supported on some
  *         platforms; the apr_pollset_create() call will fail with
  *         APR_ENOTIMPL on platforms where it is not supported.
  * @remark If flags contains APR_POLLSET_NOCOPY, then the apr_pollfd_t
@@ -233,7 +226,6 @@ APR_DECLARE(apr_status_t) apr_pollset_add(apr_pollset_t *pollset,
  * Remove a descriptor from a pollset
  * @param pollset The pollset from which to remove the descriptor
  * @param descriptor The descriptor to remove
- * @remark If the descriptor is not found, APR_NOTFOUND is returned.
  * @remark If the pollset has been created with APR_POLLSET_THREADSAFE
  *         and thread T1 is blocked in a call to apr_pollset_poll() for
  *         this same pollset that is being modified via apr_pollset_remove()
@@ -267,6 +259,8 @@ APR_DECLARE(apr_status_t) apr_pollset_remove(apr_pollset_t *pollset,
  * @remark Multiple signalled conditions for the same descriptor may be reported
  *         in one or more returned apr_pollfd_t structures, depending on the
  *         implementation.
+ * @bug With versions 1.4.2 and prior on Windows, a call with no descriptors
+ *      and timeout will return immediately with the wrong error code.
  */
 APR_DECLARE(apr_status_t) apr_pollset_poll(apr_pollset_t *pollset,
                                            apr_interval_time_t timeout,
@@ -296,6 +290,8 @@ APR_DECLARE(apr_status_t) apr_pollset_wakeup(apr_pollset_t *pollset);
  *         descriptor has been signalled or the timeout has expired. 
  * @remark The rtnevents field in the apr_pollfd_t array will only be filled-
  *         in if the return value is APR_SUCCESS.
+ * @bug With versions 1.4.2 and prior on Windows, a call with no descriptors
+ *      and timeout will return immediately with the wrong error code.
  */
 APR_DECLARE(apr_status_t) apr_poll(apr_pollfd_t *aprset, apr_int32_t numsock,
                                    apr_int32_t *nsds, 
@@ -313,7 +309,7 @@ APR_DECLARE(const char *) apr_pollset_method_name(apr_pollset_t *pollset);
  */
 APR_DECLARE(const char *) apr_poll_method_defname(void);
 
-/** Opaque structure used for pollcb API */
+/** Opaque structure used for pollset API */
 typedef struct apr_pollcb_t apr_pollcb_t;
 
 /**
@@ -401,6 +397,8 @@ typedef apr_status_t (*apr_pollcb_cb_t)(void *baton, apr_pollfd_t *descriptor);
  * @remark Multiple signalled conditions for the same descriptor may be reported
  *         in one or more calls to the callback function, depending on the
  *         implementation.
+ * @bug With versions 1.4.2 and prior on Windows, a call with no descriptors
+ *      and timeout will return immediately with the wrong error code.
  */
 APR_DECLARE(apr_status_t) apr_pollcb_poll(apr_pollcb_t *pollcb,
                                           apr_interval_time_t timeout,
